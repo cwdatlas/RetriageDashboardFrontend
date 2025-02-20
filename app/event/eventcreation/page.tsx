@@ -2,21 +2,23 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createPatient } from "@/app/api/patientsApi";
+import { createEvent } from "@/app/api/eventApi";
+import { getUserById } from "@/app/api/userApi";
+import {Resource} from "@/app/models/resource"
 // ^ Adjust the import path to wherever your patientsApi.ts file lives
 
-export default function CreatePatientPage() {
+export default function EventCreation() {
     const router = useRouter();
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
-    const [status, setStatus] = useState("");
+    const [name, setName] = useState("");
+    const director = getUserById(1);
+    const [resources, setResources] = useState<Array<Array<Resource>>>([]);
     const [error, setError] = useState<string | null>(null);
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
 
         try {
-            await createPatient({ firstName, lastName, status });
+            await createEvent({ name, director, resources });
             // After creation, navigate to the /patients page:
             router.push("/");
         } catch (err: unknown) {
@@ -30,7 +32,7 @@ export default function CreatePatientPage() {
 
     return (
         <div>
-            <h1>Create a New Patient</h1>
+            <h1>Create a New Event</h1>
             <form onSubmit={handleSubmit}>
                 {error && <p style={{ color: "red" }}>{error}</p>}
 
@@ -38,28 +40,17 @@ export default function CreatePatientPage() {
                     <label>First Name: </label>
                     <input
                         type="text"
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
                         required
                     />
                 </div>
-
-                <div>
-                    <label>Last Name: </label>
-                    <input
-                        type="text"
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                        required
-                    />
-                </div>
-
                 <div>
                     <label>Status: </label>
                     <input
                         type="text"
-                        value={status}
-                        onChange={(e) => setStatus(e.target.value)}
+                        value={resources}
+                        onChange={(e) => setResources(e.target.value)}
                         required
                     />
                 </div>
